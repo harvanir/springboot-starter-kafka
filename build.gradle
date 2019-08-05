@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.22.RELEASE'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'org.springframework.boot'
+
+group = 'org.harvanir.kafka'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework.kafka:spring-kafka'
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.projectlombok:lombok'
+    testCompile 'org.slf4j:slf4j-api'
+    testCompile 'log4j:log4j:1.2.17'
+    testCompile 'org.springframework.kafka:spring-kafka-test'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootRepackage {
+    enabled = false
+}

@@ -1,0 +1,13 @@
+message-broker:
+  kafka:
+    consumers-container:
+      default:
+        bootstrap-servers: localhost:9092
+        group-id: groupId
+        concurrency: 2
+        auto-offset-reset: latest
+      high-concurrent:
+        bootstrap-servers: localhost:9092
+        group-id: groupId
+        concurrency: 200
+        auto-offset-reset: latest
