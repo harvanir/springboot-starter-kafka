@@ -1,7 +1,5 @@
 package org.harvanir.kafka.registry.container;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -10,6 +8,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -18,9 +17,10 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.validation.BindException;
 
-/**
- * @author Harvan Irsyadi
- */
+import java.util.HashMap;
+import java.util.Map;
+
+/** @author Harvan Irsyadi */
 @Slf4j
 public class KafkaConsumerContainerRegistrar {
 
@@ -28,14 +28,16 @@ public class KafkaConsumerContainerRegistrar {
     registerFactory(constructPropertiesMap(environment), beanDefinitionRegistry);
   }
 
-  private KafkaConsumerContainerPropertiesMap constructPropertiesMap(Environment environment) {
-    KafkaConsumerContainerPropertiesMap propertiesMap = new KafkaConsumerContainerPropertiesMap();
-    PropertiesConfigurationFactory<KafkaConsumerContainerPropertiesMap> configurationFactory =
+  private KafkaConsumerContainerMapProperties constructPropertiesMap(Environment environment) {
+    KafkaConsumerContainerMapProperties propertiesMap = new KafkaConsumerContainerMapProperties();
+    PropertiesConfigurationFactory<KafkaConsumerContainerMapProperties> configurationFactory =
         new PropertiesConfigurationFactory<>(propertiesMap);
 
-    configurationFactory.setTargetName(KafkaConsumerContainerPropertiesMap.PROPERTIES_PREFIX);
-    MutablePropertySources propertySources = ((ConfigurableEnvironment) environment)
-        .getPropertySources();
+    ConfigurationProperties configurationProperties =
+        KafkaConsumerContainerMapProperties.class.getAnnotation(ConfigurationProperties.class);
+    configurationFactory.setTargetName(configurationProperties.prefix());
+    MutablePropertySources propertySources =
+        ((ConfigurableEnvironment) environment).getPropertySources();
 
     configurationFactory.setPropertySources(propertySources);
 
@@ -50,13 +52,15 @@ public class KafkaConsumerContainerRegistrar {
 
     propertiesMap
         .getConsumersContainer()
-        .forEach((key, schedulerProperties) ->
-            log.info("Loading kafka scheduler: key: \"{}\", schedulerProperties: {}", key,
-                schedulerProperties));
+        .forEach(
+            (key, schedulerProperties) ->
+                log.info(
+                    "Loading kafka scheduler: key: \"{}\", schedulerProperties: {}",
+                    key,
+                    schedulerProperties));
 
     return propertiesMap;
   }
-
 
   private Map<String, Object> consumerConfigs(KafkaConsumerContainerProperties properties) {
     Map<String, Object> props = new HashMap<>();
@@ -74,11 +78,10 @@ public class KafkaConsumerContainerRegistrar {
     return new DefaultKafkaConsumerFactory<>(consumerConfigs(properties));
   }
 
-  private void registerDefault(KafkaConsumerContainerPropertiesMap propertiesFactory,
-      BeanDefinitionRegistry registry
-  ) {
-    KafkaConsumerContainerProperties defaultProperties = propertiesFactory
-        .getConsumersContainer().get("default");
+  private void registerDefault(
+      KafkaConsumerContainerMapProperties propertiesFactory, BeanDefinitionRegistry registry) {
+    KafkaConsumerContainerProperties defaultProperties =
+        propertiesFactory.getConsumersContainer().get("default");
 
     if (defaultProperties != null) {
       registerBeanDefinition(registry, "kafkaListenerContainerFactory", defaultProperties);
@@ -97,7 +100,9 @@ public class KafkaConsumerContainerRegistrar {
     return beanDefinition;
   }
 
-  private void registerBeanDefinition(BeanDefinitionRegistry registry, String beanName,
+  private void registerBeanDefinition(
+      BeanDefinitionRegistry registry,
+      String beanName,
       KafkaConsumerContainerProperties properties) {
     log.info("Registering bean \"{}\" with properties: {}", beanName, properties);
 
@@ -105,12 +110,12 @@ public class KafkaConsumerContainerRegistrar {
     registry.registerBeanDefinition(beanName, beanDefinition);
   }
 
-  private void registerFactory(KafkaConsumerContainerPropertiesMap propertiesMap,
-      BeanDefinitionRegistry registry
-  ) {
+  private void registerFactory(
+      KafkaConsumerContainerMapProperties propertiesMap, BeanDefinitionRegistry registry) {
     registerDefault(propertiesMap, registry);
 
-    propertiesMap.getConsumersContainer()
+    propertiesMap
+        .getConsumersContainer()
         .forEach((key, properties) -> registerBeanDefinition(registry, key, properties));
   }
 }

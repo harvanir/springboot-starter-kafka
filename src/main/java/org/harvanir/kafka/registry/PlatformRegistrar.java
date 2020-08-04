@@ -7,9 +7,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
-/**
- * @author Harvan Irsyadi
- */
+/** @author Harvan Irsyadi */
 public class PlatformRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
 
   private Environment environment;
@@ -20,9 +18,8 @@ public class PlatformRegistrar implements ImportBeanDefinitionRegistrar, Environ
   }
 
   @Override
-  public void registerBeanDefinitions(AnnotationMetadata annotationMetadata,
-      BeanDefinitionRegistry beanDefinitionRegistry
-  ) {
+  public void registerBeanDefinitions(
+      AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
     registerConsumerContainer(beanDefinitionRegistry);
   }
 

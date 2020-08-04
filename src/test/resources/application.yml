@@ -6,8 +6,13 @@ message-broker:
         group-id: groupId
         concurrency: 2
         auto-offset-reset: latest
+        ack-mode: manual_immediate
       high-concurrent:
-        bootstrap-servers: localhost:9092
-        group-id: groupId
+        bootstrap-servers: localhost:9093
+        group-id: groupId2
         concurrency: 200
-        auto-offset-reset: latest
+        auto-offset-reset: none
+        ack-mode: manual
+logging:
+  level:
+    org.harvanir.kafka: info
