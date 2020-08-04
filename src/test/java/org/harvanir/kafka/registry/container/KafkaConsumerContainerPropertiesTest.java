@@ -1,15 +1,15 @@
 package org.harvanir.kafka.registry.container;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
 import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.junit.jupiter.api.Test;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
-public class KafkaConsumerContainerPropertiesTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+class KafkaConsumerContainerPropertiesTest {
 
   @Test
   public void testProperty() {

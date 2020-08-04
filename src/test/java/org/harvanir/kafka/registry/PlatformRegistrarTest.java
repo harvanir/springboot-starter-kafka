@@ -2,27 +2,25 @@ package org.harvanir.kafka.registry;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
 import java.lang.reflect.Field;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest
-@RunWith(SpringRunner.class)
-public class PlatformRegistrarTest {
+// @RunWith(SpringRunner.class)
+class PlatformRegistrarTest {
 
   @SpringBootApplication
   static class Main {}
@@ -30,7 +28,7 @@ public class PlatformRegistrarTest {
   @Autowired private ApplicationContext applicationContext;
 
   @Test
-  public void testLoadContext() throws NoSuchFieldException, IllegalAccessException {
+  void testLoadContext() throws NoSuchFieldException, IllegalAccessException {
     Object beanDefault = applicationContext.getBean("default");
     Object beanHighConcurrent = applicationContext.getBean("high-concurrent");
 
@@ -62,20 +60,19 @@ public class PlatformRegistrarTest {
     DefaultKafkaConsumerFactory<?, ?> factory =
         (DefaultKafkaConsumerFactory<?, ?>) container.getConsumerFactory();
 
-    Assert.assertEquals(
+    assertEquals(
         bootstrapServers,
         factory.getConfigurationProperties().get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-    Assert.assertEquals(
-        groupId, factory.getConfigurationProperties().get(ConsumerConfig.GROUP_ID_CONFIG));
-    Assert.assertEquals(
+    assertEquals(groupId, factory.getConfigurationProperties().get(ConsumerConfig.GROUP_ID_CONFIG));
+    assertEquals(
         autoOffsetReset,
         factory.getConfigurationProperties().get(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG));
-    Assert.assertEquals(ackMode, container.getContainerProperties().getAckMode());
+    assertEquals(ackMode, container.getContainerProperties().getAckMode());
 
     Field concurrencyField =
         ConcurrentKafkaListenerContainerFactory.class.getDeclaredField("concurrency");
-    concurrencyField.setAccessible(true);
+    concurrencyField.setAccessible(true); // NOSONAR
 
-    Assert.assertEquals(concurrency, concurrencyField.get(container));
+    assertEquals(concurrency, concurrencyField.get(container));
   }
 }

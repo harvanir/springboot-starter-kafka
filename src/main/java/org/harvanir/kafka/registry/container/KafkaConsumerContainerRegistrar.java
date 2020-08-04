@@ -4,18 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.validation.BindException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,26 +25,12 @@ public class KafkaConsumerContainerRegistrar {
   }
 
   private KafkaConsumerContainerMapProperties constructPropertiesMap(Environment environment) {
-    KafkaConsumerContainerMapProperties propertiesMap = new KafkaConsumerContainerMapProperties();
-    PropertiesConfigurationFactory<KafkaConsumerContainerMapProperties> configurationFactory =
-        new PropertiesConfigurationFactory<>(propertiesMap);
-
     ConfigurationProperties configurationProperties =
         KafkaConsumerContainerMapProperties.class.getAnnotation(ConfigurationProperties.class);
-    configurationFactory.setTargetName(configurationProperties.prefix());
-    MutablePropertySources propertySources =
-        ((ConfigurableEnvironment) environment).getPropertySources();
-
-    configurationFactory.setPropertySources(propertySources);
-
-    try {
-      configurationFactory.bindPropertiesToTarget();
-    } catch (BindException e) {
-      String err = "Error binding properties";
-      log.error(err, e);
-
-      throw new BeanCreationException(err);
-    }
+    KafkaConsumerContainerMapProperties propertiesMap =
+        Binder.get(environment)
+            .bind(configurationProperties.prefix(), KafkaConsumerContainerMapProperties.class)
+            .get();
 
     propertiesMap
         .getConsumersContainer()

@@ -6,6 +6,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.NonNull;
 
 /** @author Harvan Irsyadi */
 public class PlatformRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
@@ -13,13 +14,14 @@ public class PlatformRegistrar implements ImportBeanDefinitionRegistrar, Environ
   private Environment environment;
 
   @Override
-  public void setEnvironment(Environment environment) {
+  public void setEnvironment(@NonNull Environment environment) {
     this.environment = environment;
   }
 
   @Override
   public void registerBeanDefinitions(
-      AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
+      @NonNull AnnotationMetadata annotationMetadata,
+      @NonNull BeanDefinitionRegistry beanDefinitionRegistry) {
     registerConsumerContainer(beanDefinitionRegistry);
   }
 

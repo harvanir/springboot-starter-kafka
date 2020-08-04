@@ -3,11 +3,9 @@ package org.harvanir.kafka.registry.container;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
-/**
- * @author Harvan Irsyadi
- */
+/** @author Harvan Irsyadi */
 @ToString
 @Getter
 @Setter

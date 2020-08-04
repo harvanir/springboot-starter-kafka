@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 /** @author Harvan Irsyadi */
 @EnableStarterKafka
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class StarterKafkaAutoConfiguration {
 
   @Bean

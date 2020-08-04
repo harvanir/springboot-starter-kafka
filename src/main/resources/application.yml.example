@@ -6,8 +6,10 @@ message-broker:
         group-id: groupId
         concurrency: 2
         auto-offset-reset: latest
+        ack-mode: manual_immediate
       high-concurrent:
         bootstrap-servers: localhost:9092
         group-id: groupId
         concurrency: 200
         auto-offset-reset: latest
+        ack-mode: manual
